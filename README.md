@@ -1,2 +1,2 @@
 # cfifo
-an implication of fifi
+an implication of fifo operation
