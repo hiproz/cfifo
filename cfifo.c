@@ -19,10 +19,16 @@ void cfifo_init(cfifo_struct *fifo, uint8_t *queue, uint16_t width, uint16_t dep
 
 // read
 int cfifo_read(cfifo_struct *fifo, uint16_t *index, uint8_t **data, uint16_t *len) {
-  *index = fifo->read_index;
-  *data = fifo->queue + fifo->read_index * fifo->queue_width;
-  *len = fifo->queue_width;
-  return 0;
+  if (fifo->used_count > 0) {
+    *index = fifo->read_index;
+    *data = fifo->queue + fifo->read_index * fifo->queue_width;
+    *len = fifo->queue_width;
+    return 0;
+  } else {
+    *data = NULL;
+    *len = 0;
+    return 1;
+  }
 }
 
 // write
@@ -50,8 +56,14 @@ uint16_t cfifo_get_size(cfifo_struct *fifo) {
 }
 
 void cfifo_rmv_top(cfifo_struct *fifo) {
-  fifo->read_index = (fifo->read_index + 1) % fifo->queue_depth;
-  fifo->used_count--;
+  if (fifo->used_count > 0) {
+    // Çå³ýÊý¾Ý
+    memset(fifo->queue + fifo->read_index * fifo->queue_width, 0, fifo->queue_width);
+    fifo->read_index = (fifo->read_index + 1) % fifo->queue_depth;
+    fifo->used_count--;
+  } else {
+    //log(ERR, "the fifo is empty\r\n");
+  }
 }
 
 void cfifo_clear(void) {
