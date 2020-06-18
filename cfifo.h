@@ -4,6 +4,7 @@
 #include "string.h"
 
 typedef struct {
+  uint16_t init_ind; // 0x55 初始化 other 未初始化
   uint16_t read_index;
   uint16_t write_index;
   uint16_t used_count;
@@ -30,4 +31,5 @@ int cfifo_read(cfifo_struct *fifo, uint8_t **data, uint16_t len);
 
 void cfifo_rmv_top(cfifo_struct *fifo);
 uint16_t cfifo_get_size(cfifo_struct *fifo);
+void cfifo_clear(cfifo_struct *fifo);
 #endif
